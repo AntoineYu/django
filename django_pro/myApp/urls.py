@@ -1,7 +1,10 @@
-from django.conf.urls import url
-from . import views
+from django.urls import path
+from .views import RegistrerView,LoginView,UserView,TryView
 
 urlpatterns = [
-    url(r'^$',views.get),
-    url(r'^login/',views.log),
+    path(r'registrer/',RegistrerView.as_view(), name='registrer'),
+    path(r'',LoginView.as_view(),name='login'),
+    path(r'user/',UserView.as_view()),
+    path(r'ajax/',UserView.ajax),
+    path(r'comments_upload/', TryView.as_view(), name='comments_upload'),
 ]
