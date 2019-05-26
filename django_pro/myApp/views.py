@@ -1,11 +1,8 @@
 from django.shortcuts import render,render_to_response
 from django.views import View
-from .forms import RegistrerForm,LoginForm
+from .forms import RegistrerForm,LoginForm,UserForm
 from .models import User
 from django.http import HttpResponse,HttpResponseRedirect
-
-
-
 
 # Create your views here.
 class RegistrerView(View):
@@ -52,40 +49,32 @@ class LoginView(View):
         else:
             return render(request,'login.html',{'login_form':login_form})
 
-class UserView(View):
-    def get(self,request):
-        username = request.COOKIES.get('username', '')
-        email = User.objects.get(uname=username).uemail
-        return render_to_response('user.html', {'username': username,'email':email})
-    # def post(self,request):
-    #     if request.is_ajax():
-    #         useremail = request.POST.get("mail")
-    #         return HttpResponse(useremail)
-    #     else:
-    #         return render(request,"user.html")
-    def ajax(self,request):
+
+def get(request):
+    username = request.COOKIES.get('username', '')
+    email = User.objects.get(uname=username).uemail
+    return render_to_response('user.html', {'username': username,'email':email})
+
+def ajax(request):
         # username = request.COOKIES.get('username', '')
         # email = User.objects.get(uname=username).uemail
-        if request.is_ajax():
-            useremail = request.POST.get("mail")
-            return render('user.html', {'email':useremail})
-        else:
-            return render(request,"user.html")
+    if request.is_ajax():
+        # user_form = UserForm(request.POST)
+        username = request.COOKIES.get('username', '')
+        useremail = request.POST.get("mail")
+        user = User.objects.get(uname=username)
+        user.uemail = useremail
+        user.save()
+        return HttpResponse(useremail)
+    else:
+        return render(request,"user.html")
 
-# Ajax post请求的后端处理函数
-# class TryView(View):
-#     def get(self,request):
-#         return render(request,"try.html")
+def logout(request):
+    username = request.COOKIES.get('username', '')
+    if username:
+        response = HttpResponseRedirect('/login/')
+        response.delete_cookie('username', username, 3600)
+        return response
+    else:
+        return HttpResponse('Veuillez vous connecter d\'abord')
 
-    # Ajax get请求的后端处理函数
-class TryView(View):
-    def get(self,request):
-        return render(request, "try.html")
-    def comments_upload(self,request):
-        if request.method == 'POST':
-            print("it's a test")  # 用于测试
-            print(request.POST['name'])  # 测试是否能够接收到前端发来的name字段
-            print(request.POST['password']) # 用途同上
-            return HttpResponse("表单测试成功")  # 最后返会给前端的数据，如果能在前端弹出框中显示我们就成功了
-        else:
-            return HttpResponse("<h1>test</h1>")

@@ -17,37 +17,60 @@
      <div id="top">
           <h1 class="text-center">Mon espace</h1>
      </div>
-     <p class="text-center">Bienvenue,{{ username }} <a href="#">&nbsp;&nbsp;&nbsp;&nbsp;log out</a></p>
-    <form class="form-inline">
-      <div class="form-group">
-        <label class="sr-only" for="InputEmail">Amount</label>
-         <div class="input-group">
-          <div class="input-group-addon">Email</div>
-          <input type="text" class="form-control" id="InputEmail" placeholder="Nouvel email">
+     <p class="text-center">Bienvenue,{{ username }} <a href="/login/logout/">&nbsp;&nbsp;&nbsp;&nbsp;log out</a></p>
+    <div class="text-center">
+        <h5>{{ email }}</h5>
+    </div>
+        <div class="text-center">
+            <button class="btn btn-primary btn-lg" data-toggle="modal" data-target="#myModal">Modifier les informations</button>
         </div>
-      </div>
-      <button type="submit" class="btn btn-primary" id="email_modifier">Enregistrer</button>
-         <h3>{{ msg }}</h3>
-        <h2>{{ email }}</h2>
-</form>
+    <!-- 模态框（Modal） -->
+    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                    <h4 class="modal-title" id="myModalLabel">Mes informations</h4>
+                </div>
+                <div class="modal-body">
+                        <form class="form-inline">
+                          <div class="form-group">
+                            <label class="sr-only" for="InputEmail">Amount</label>
+                             <div class="input-group">
+                              <div class="input-group-addon">Email</div>
+                              <input type="text" class="form-control" id="InputEmail" placeholder="Nouvel email">
+                            </div>
+                          </div>
+                            <h4>{{user_form.email.errors}}</h4>
+                        </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Enregistrer</button>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div>
+
 </div>
 </body>
 <script src="/static/jquery-3.3.1.min.js"></script>
+<script src="/static/bootstrap-3.3.7-dist/js/bootstrap.js"></script>>
 <script type="text/javascript">
-    $(document).ready(function () {
-        $("#email_modifier").click(function () {
-            var $emailData = $("#InputEmail").val();
+     $(document).ready(function () {
+         $('#myModal').on('shown.bs.modal', function () {
+             $('#myInput').focus()
+    })
+         $('#myModal').on('hide.bs.modal', function () {
+             var $emailData = $("#InputEmail").val();
             $.ajax({
-                url: "/login/user/",
+                url:'{% url 'ajax' %}',
                 type: "POST",
                 data: {"mail": $emailData},
                 success: function (data) {
-                    $("h2").text(data);
-                    $("h3").text("ok");
+                    $("h5").text(data)
                 }
-            });
-            {#$("h3").text($emailData);#}
-        });
-    });
+            })
+         })
+    })
 </script>
 </html>
